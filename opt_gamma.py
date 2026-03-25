@@ -3,21 +3,28 @@ import numpy as np
 
 img = cv2.imread('img2.jpg')
 
-# 각 채널 분리 (BGR 순서)
 b = img[:, :, 0].astype(np.float32)
 g = img[:, :, 1].astype(np.float32)
 r = img[:, :, 2].astype(np.float32)
 
-# 가중치 합산으로 Y값 계산
 y = 0.299 * r + 0.587 * g + 0.114 * b
 
-y_norm = np.log(1 + y) / np.max(y)
+y_norm = np.log(1 + y) / np.log(np.max(y))
 
 ret, thresh_b = cv2.threshold(y_norm, 0.5, 1, cv2.THRESH_BINARY)
 thresh_d =  1 - thresh_b
+print(thresh_b)
+print(thresh_d)
 
-y_b = y * thresh_b
-y_d = y * thresh_d
+y_b = y_norm * thresh_b
+y_d = y_norm * thresh_d
+
+# test---------------------
+cv2.imshow('thresh_b', thresh_b*255)
+cv2.imshow('thresh_d', thresh_d*255)
+cv2.waitKey(0)
+cv2.destroyAllWindows()
+#-------------------------
 
 # dark side gamma correction
 r_init = 1
