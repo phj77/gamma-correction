@@ -13,18 +13,9 @@ y_norm = np.log(1 + y) / np.log(np.max(y))
 
 ret, thresh_b = cv2.threshold(y_norm, 0.5, 1, cv2.THRESH_BINARY)
 thresh_d =  1 - thresh_b
-print(thresh_b)
-print(thresh_d)
 
-y_b = y_norm * thresh_b
-y_d = y_norm * thresh_d
-
-# test---------------------
-cv2.imshow('thresh_b', thresh_b*255)
-cv2.imshow('thresh_d', thresh_d*255)
-cv2.waitKey(0)
-cv2.destroyAllWindows()
-#-------------------------
+y_b = y * thresh_b
+y_d = y * thresh_d
 
 # dark side gamma correction
 r_init = 1
@@ -45,6 +36,7 @@ while 0.1 ** 7 * -1 > r_next - r_cur or 0.1 ** 7 < r_next - r_cur: # 무한 루�
     sum_s = np.sum(s_r)
     sum_s_log = np.sum(s_r * log_y_d)
     r_next = r_cur - (sum_s - std_d)/sum_s_log
+    print(r_next-r_cur)
 r_d = r_next
 
 # bright side gamma correction
