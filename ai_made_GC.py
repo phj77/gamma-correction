@@ -106,7 +106,7 @@ def enhance_low_light_image(image_path):
     
     return out_img.astype(np.uint8)
 
-output_image = enhance_low_light_image('img6.jpg')
+output_image = enhance_low_light_image('img16.jpg')
 cv2.imshow('Enhanced Image', output_image)
 cv2.waitKey(0)
 cv2.destroyAllWindows()

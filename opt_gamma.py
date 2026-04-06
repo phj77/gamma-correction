@@ -1,6 +1,7 @@
 import cv2
 import numpy as np
-img = cv2.imread("img6.jpg")
+img_idx = 2
+img = cv2.imread(f"img{img_idx}.jpg")
 
 img = img.astype(np.float32) / 255.0
 
@@ -39,7 +40,7 @@ for i in range(100):
 
     if np.abs(r_cur - r_before) < 1e-7:
         break
-r_cur = np.clip(r_cur, 1e-6, 1.0)
+#r_cur = np.clip(r_cur, 1e-6, 1.0)
 r_d = r_cur
 
 print("dark side gamma:", r_d)
@@ -64,7 +65,7 @@ for i in range(100):
     if np.abs(r_cur - r_before) < 1e-7:
         break
 
-r_cur = np.clip(r_cur, 1.0, 10.0)
+#r_cur = np.clip(r_cur, 1.0, 10.0)
 r_b = r_cur
 
 print("bright side gamma:", r_b)
@@ -72,20 +73,33 @@ print("bright side gamma:", r_b)
 enhanced_y_d = y_norm ** r_d
 enhanced_y_b = y_norm ** r_b
 
+cv2.imshow('Enhanced Y Dark', enhanced_y_d)
+cv2.imshow('Enhanced Y Bright', enhanced_y_b)
+cv2.waitKey(0)
+cv2.destroyAllWindows()
+
 sigma = 0.5
 w = np.exp(-1 / (sigma ** 2 * 2) * (enhanced_y_b ** 2))
 y_o = w * enhanced_y_d + (1 - w) * enhanced_y_b
 
-i_out = np.zeros(img.shape)
-satur_d = 1 - np.tanh(y_d)
-satur_d[satur_d == 1] = 0
-satur_b = 1 - np.tanh(y_b)
-satur_b[satur_b == 1] = 0
-satur = satur_d + satur_b
+cv2.imshow('Enhanced Y', y_o)
+cv2.waitKey(0)
+cv2.destroyAllWindows()
+#y_o = y_b ** r_b + y_d ** r_d
+
+# satur_d = 1 - np.tanh(y_d)
+# satur_d[satur_d == 1] = 0
+# satur_b = 1 - np.tanh(y_b)
+# satur_b[satur_b == 1] = 0
+# satur = satur_d + satur_b
+
+satur = 1 - np.tanh(enhanced_y_b)
 
 for i in range(0, 3):
     img[:,:,i] = (img[:,:,i] / (y_norm + 1e-8)) ** satur * y_o
 
+img_uint8 = (img * 255).astype(np.uint8)
+cv2.imwrite(f'enhanced_image_{img_idx}.jpg', img_uint8)
 cv2.imshow('Enhanced Image', img)
 cv2.waitKey(0)
 cv2.destroyAllWindows()
